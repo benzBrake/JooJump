@@ -19,7 +19,7 @@ if [ "$FLAG" == "potatso" ]; then
 	MATCH="  - DOMAIN-MATCH"
 	CIDR="  - IP-CIDR"
 	echo "ruleSets:" >> ${FILENAME}
-	echo "- name: JooJump - CN" >> ${FILENAME}
+	echo "- name: JooJump" >> ${FILENAME}
 	echo "  rules: " >> ${FILENAME}
 elif [ "$FLAG" == "postern" ]; then
 	SUFFIX="DOMAIN-SUFFIX"
