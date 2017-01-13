@@ -6,8 +6,6 @@ facebook.com
 fbcdn.net
 gravatar.com
 ggpht.com
-google.com
-googleapis.com
 gmail.com
 goo.gl
 gstatic.com
