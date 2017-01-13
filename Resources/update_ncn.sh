@@ -41,29 +41,6 @@ elif [ "$FLAG" == "shadowrocket" ]; then
 	echo " " >> ${FILENAME}
 	echo "[Rule]"
 fi
-if [ -f proxy.txt ]; then
-	echo "# Proxy" >> ${FILENAME}
-	cat proxy.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},Proxy" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},Proxy" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f proxy_domain_match.txt ]; then
-	cat proxy_domain_match.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${MATCH},${line},Proxy" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},Proxy" >> ${FILENAME}
-		fi
-	done
-fi
 if [ -f reject.txt ]; then
 	echo "# REJECT" >> ${FILENAME}
 	cat reject.txt | while read line
@@ -82,17 +59,6 @@ if [ -f reject_domain_match.txt ]; then
 		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
 		if [ $? -ne 0 ];then
 			echo "${MATCH},${line},REJECT" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},REJECT" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f reject_video_ads_cn.txt ]; then
-	cat reject_video_ads_cn.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},REJECT" >> ${FILENAME}
 		else
 			echo "${CIDR},${line},REJECT" >> ${FILENAME}
 		fi
