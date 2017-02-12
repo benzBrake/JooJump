@@ -1,4 +1,5 @@
 #!/bin/bash
+WORK_DIR="$( cd "$( dirname "$0"  )" && pwd  )"
 action=$@
 if [ "$1" == "potatso" ]; then
 	FLAG=potatso
@@ -14,6 +15,7 @@ else
 	exit
 fi
 echo "# by benzBrake http://doufu.ru" > ${FILENAME}
+echo "# Update" >> ${FILENAME}
 if [ "$FLAG" == "potatso" ]; then
 	SUFFIX="  - DOMAIN-SUFFIX"
 	MATCH="  - DOMAIN-MATCH"
@@ -32,14 +34,14 @@ elif [ "$FLAG" == "postern" ]; then
 	echo "[Rule]" >> ${FILENAME}
 elif [ "$FLAG" == "shadowrocket" ]; then
 	SUFFIX="DOMAIN-SUFFIX"
-	MATCH="DOMAIN-MATCH"
+	MATCH="DOMAIN-KEYWORD"
 	CIDR="IP-CIDR"
 	echo "[General]" >> ${FILENAME}
 	echo "bypass-system = true" >> ${FILENAME}
 	echo "skip-proxy = 192.168.0.0/24,10.0.0.0/8,172.16.0.0/12,localhost,*.local,e.crashlynatics.com,12306.cn" >> ${FILENAME}
 	echo "bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/24,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32" >> ${FILENAME}
 	echo " " >> ${FILENAME}
-	echo "[Rule]"
+	echo "[Rule]" >> ${FILENAME}
 fi
 if [ -f reject_video_ads_cn.txt ]; then
 	cat reject_video_ads_cn.txt | while read line
@@ -73,36 +75,25 @@ elif [ "$FLAG" == "shadowrocket" ]; then
 	echo "GEOIP,CN,DIRECT" >> ${FILENAME}
 	echo "FINAL,DIRECT" >> ${FILENAME}
 fi
-if [ -f PRE_${FILENAME} ]; then
-	grep -vwf PRE_${FILENAME} ${FILENAME} >/dev/null
-	if [ $? -eq 0 ]; then
+cd "$WORK_DIR"
+if [ -f ../${FILENAME} ];then
+	if [ -f PRE_${FILENAME} ]; then
 		rm -f PRE_${FILENAME}
-		cp ${FILENAME} PRE_${FILENAME}
-		sed -i "1a# Update: $(date '+%Y%m%d %T')" ${FILENAME}
-		rm -f ../${FILENAME}
-		cp ${FILENAME} ../${FILENAME}
-		rm -f ${FILENAME}
-		echo "Update ${FLAG} Successful"
-	else
-		echo "Do Nothing"
 	fi
-	grep -vwf ${FILENAME} PRE_${FILENAME} >/dev/null
-	if [ $? -eq 0 ]; then
-		rm -f PRE_${FILENAME}
-		cp ${FILENAME} PRE_${FILENAME}
-		sed -i "1a# Update: $(date '+%Y%m%d %T')" ${FILENAME}
+	cp ../${FILENAME} ./PRE_${FILENAME}
+	sed -i "s@# Update.*@# Update@" PRE_${FILENAME}
+	diff ${FILENAME} PRE_${FILENAME} >/dev/null
+	if [ $? -ne 0 ]; then
 		rm -f ../${FILENAME}
 		cp ${FILENAME} ../${FILENAME}
-		rm -f ${FILENAME}
 		echo "Update ${FLAG} Successful"
+		sed -i "s@# Update.*@# Update: $(date '+%Y%m%d %T')@" ../${FILENAME}
 	else
 		echo "Do Nothing"
 	fi
 else
-	cp ${FILENAME} PRE_${FILENAME}
-	sed -i "1a# Update: $(date '+%Y%m%d %T')" ${FILENAME}
-	rm -f ../${FILENAME}
-	cp ${FILENAME} ../${FILENAME}
-	rm -f ${FILENAME}
 	echo "Update ${FLAG} Successful"
+	cp ${FILENAME} ../
+	sed -i "s@# Update.*@# Update: $(date '+%Y%m%d %T')@" ../${FILENAME}
 fi
+rm -f PRE_${FILENAME} ${FILENAME}
