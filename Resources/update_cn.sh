@@ -90,6 +90,17 @@ if [ -f reject_domain_match.txt ]; then
 		fi
 	done
 fi
+if [ -f reject_analytics_cn.txt ]; then
+	cat reject_analytics_cn.txt | while read line
+	do
+		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
+		if [ $? -ne 0 ];then
+			echo "${MATCH},${line},REJECT" >> ${FILENAME}
+		else
+			echo "${CIDR},${line},REJECT" >> ${FILENAME}
+		fi
+	done
+fi
 if [ -f reject_video_ads_cn.txt ]; then
 	cat reject_video_ads_cn.txt | while read line
 	do
