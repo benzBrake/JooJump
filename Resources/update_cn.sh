@@ -40,6 +40,7 @@ elif [ "$FLAG" == "shadowrocket" ]; then
 	echo "bypass-system = true" >> ${FILENAME}
 	echo "skip-proxy = 192.168.0.0/24,10.0.0.0/8,172.16.0.0/12,localhost,*.local,e.crashlynatics.com,12306.cn" >> ${FILENAME}
 	echo "bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/24,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32" >> ${FILENAME}
+	echo "dns-server = 1.2.4.8,119.29.29.29,8.8.8.8" >>${FILENAME}
 	echo " " >> ${FILENAME}
 	echo "[Rule]" >> ${FILENAME}
 fi
