@@ -14,6 +14,9 @@ else
 	echo "Parameter Error [$action]"
 	exit
 fi
+dList=$(ls direct*.txt)
+rList=$(ls reject*.txt)
+pList=$(ls proxy*.txt)
 echo "# by benzBrake http://doufu.ru" > ${FILENAME}
 echo "# Update" >> ${FILENAME}
 if [ "$FLAG" == "potatso" ]; then
@@ -44,86 +47,69 @@ elif [ "$FLAG" == "shadowrocket" ]; then
 	echo " " >> ${FILENAME}
 	echo "[Rule]" >> ${FILENAME}
 fi
-if [ -f proxy.txt ]; then
-	echo "# Proxy" >> ${FILENAME}
-	cat proxy.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},Proxy" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},Proxy" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f proxy_domain_match.txt ]; then
-	cat proxy_domain_match.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
+echo "# Proxy" >> ${FILENAME}
+for item in ${pList}
+do
+	result=$(echo $item | grep "domain_match")
+	if [[ "$result" != "" ]]; then
+		cat "$item" | while read line
+		do
 			echo "${MATCH},${line},Proxy" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},Proxy" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f reject.txt ]; then
-	echo "# REJECT" >> ${FILENAME}
-	cat reject.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},REJECT" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},REJECT" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f reject_domain_match.txt ]; then
-	cat reject_domain_match.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
+		done
+	else
+		cat "$item" | while read line
+		do
+			echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
+			if [ $? -ne 0 ];then
+				echo "${SUFFIX},${line},Proxy" >> ${FILENAME}
+			else
+				echo "${CIDR},${line},Proxy" >> ${FILENAME}
+			fi
+		done
+	fi
+done
+echo "# REJECT" >> ${FILENAME}
+for item in ${rList}
+do
+	result=$(echo $item | grep "domain_match")
+	if [[ "$result" != "" ]]; then
+		cat "$item" | while read line
+		do
 			echo "${MATCH},${line},REJECT" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},REJECT" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f reject_analytics_cn.txt ]; then
-	cat reject_analytics_cn.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${MATCH},${line},REJECT" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},REJECT" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f reject_video_ads_cn.txt ]; then
-	cat reject_video_ads_cn.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},REJECT" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},REJECT" >> ${FILENAME}
-		fi
-	done
-fi
-if [ -f direct.txt ]; then
-	echo "# DIRECT" >> ${FILENAME}
-	cat direct.txt | while read line
-	do
-		echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
-		if [ $? -ne 0 ];then
-			echo "${SUFFIX},${line},Direct" >> ${FILENAME}
-		else
-			echo "${CIDR},${line},Direct" >> ${FILENAME}
-		fi
-	done
-fi
+		done
+	else
+		cat "$item" | while read line
+		do
+			echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
+			if [ $? -ne 0 ];then
+				echo "${SUFFIX},${line},REJECT" >> ${FILENAME}
+			else
+				echo "${CIDR},${line},REJECT" >> ${FILENAME}
+			fi
+		done
+	fi
+done
+echo "# DIRECT" >> ${FILENAME}
+for item in ${dList}
+do
+	result=$(echo $item | grep "domain_match")
+	if [[ "$result" != "" ]]; then
+		cat "$item" | while read line
+		do
+			echo "${MATCH},${line},Direct" >> ${FILENAME}
+		done
+	else
+		cat "$item" | while read line
+		do
+			echo ${line} | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' >/dev/null
+			if [ $? -ne 0 ];then
+				echo "${SUFFIX},${line},Direct" >> ${FILENAME}
+			else
+				echo "${CIDR},${line},Direct" >> ${FILENAME}
+			fi
+		done
+	fi
+done
 if [ "$FLAG" == "potatso" ]; then
 	echo "  - GEOIP,CN,DIRECT" >> ${FILENAME}
 elif [ "$FLAG" == "postern" ]; then

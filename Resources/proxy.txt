@@ -1,7 +1,7 @@
 amazonaws.com
 cloudfront.net
 edgecastcdn.net
-ssl.fastly.net
+fastly.net
 facebook.com
 fbcdn.net
 gravatar.com
@@ -9,6 +9,7 @@ ggpht.com
 gmail.com
 goo.gl
 gstatic.com
+g.co
 youtu.be
 youtube.com
 ytimg.com

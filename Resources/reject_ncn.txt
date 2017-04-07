@@ -1,0 +1,11 @@
+api.appodeal.com
+doubleclick.net
+googleadservices.com
+googleadsserving.cn
+googlesyndication.com
+google-analytics.com
+inmobisdk-a.akamaihd.net
+leadboltads.net
+mtab.clickmon.co.kr
+static.exoclick.com
+syndication.exoclick.com
