@@ -8,6 +8,8 @@ gravatar.com
 ggpht.com
 gmail.com
 goo.gl
+googleapis.com
+googlevideo.com
 gstatic.com
 g.co
 youtu.be
