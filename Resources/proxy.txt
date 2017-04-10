@@ -10,6 +10,7 @@ gmail.com
 goo.gl
 googleapis.com
 googlevideo.com
+googleusercontent.com
 gstatic.com
 g.co
 youtu.be
@@ -33,6 +34,7 @@ wordpress.com
 wp.com
 wikipedia.org
 yastatic.net
+74.125.0.0/16
 91.108.56.0/22
 91.108.4.0/22
 109.239.140.0/24
