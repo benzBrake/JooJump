@@ -19,6 +19,9 @@ rList=$(ls reject*.txt)
 pList=$(ls proxy*.txt)
 echo "# by benzBrake http://doufu.ru" > ${FILENAME}
 echo "# Update" >> ${FILENAME}
+echo "# 功能:" >> ${FILENAME}
+echo "# 1.国内常用的广告地址屏蔽" >> ${FILENAME}
+echo "# 2.国内常见被屏蔽地址走代理" >> ${FILENAME}
 if [ "$FLAG" == "potatso" ]; then
 	SUFFIX="  - DOMAIN-SUFFIX"
 	MATCH="  - DOMAIN-MATCH"
@@ -27,6 +30,7 @@ if [ "$FLAG" == "potatso" ]; then
 	echo "- name: JooJump - CN" >> ${FILENAME}
 	echo "  rules: " >> ${FILENAME}
 elif [ "$FLAG" == "postern" ]; then
+	echo "# 注:需自行修改[Proxy]中的内容为你自己的代理" >> ${FILENAME}
 	SUFFIX="DOMAIN-SUFFIX"
 	MATCH="DOMAIN-KEYWORD"
 	CIDR="IP-CIDR"
@@ -54,7 +58,7 @@ do
 	if [[ "$result" != "" ]]; then
 		cat "$item" | while read line
 		do
-			echo "${MATCH},${line},Proxy" >> ${FILENAME}
+			echo "${MATCH},${line},Proxy,force-remote-dns" >> ${FILENAME}
 		done
 	else
 		cat "$item" | while read line

@@ -21,3 +21,4 @@ hmma.baidu.com
 hm.baidu.com
 iwstat.tudou.com
 lstat.youku.com
+report.qq.com
