@@ -1,4 +1,0 @@
-akamaihd
-amazon
-dropbox
-google
