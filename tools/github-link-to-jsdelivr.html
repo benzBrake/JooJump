@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub to jsDelivr Link Converter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin-top: 20px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 100px;
+        resize: vertical;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 5px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .mirror-select {
+        margin: 10px 0;
+      }
+      .button-group {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>GitHub to jsDelivr Link Converter</h2>
+    <div class="container">
+      <label for="githubUrl">Enter GitHub Link:</label>
+      <input
+        type="text"
+        id="githubUrl"
+        placeholder="e.g., https://github.com/user/repo/blob/main/file.js or https://raw.githubusercontent.com/user/repo/main/file.js"
+      />
+
+      <div class="mirror-select">
+        <label for="mirror">Select Mirror Site:</label>
+        <select id="mirror">
+          <option value="https://cdn.jsdelivr.net">
+            jsDelivr (Global Default)
+          </option>
+          <option value="https://cdn.jsdmirror.com">
+            jsDelivr Mirror (China Optimized)
+          </option>
+        </select>
+      </div>
+
+      <label for="jsDelivrUrl">Converted Link:</label>
+      <textarea
+        id="jsDelivrUrl"
+        readonly
+        placeholder="The converted link will be displayed here"
+      ></textarea>
+
+      <div class="button-group">
+        <button onclick="copyToClipboard()">Copy Link</button>
+      </div>
+    </div>
+
+    <script>
+      // Detect language and set default mirror
+      const userLang = navigator.language || navigator.userLanguage;
+      const mirrorSelect = document.getElementById("mirror");
+      if (userLang === "zh-CN" || userLang === "zh") {
+        mirrorSelect.value = "https://cdn.jsdmirror.com";
+      }
+
+      // Get input and output elements
+      const githubUrlInput = document.getElementById("githubUrl");
+      const jsDelivrUrl = document.getElementById("jsDelivrUrl");
+
+      // Add input event listener for automatic conversion
+      githubUrlInput.addEventListener("input", convertToJsDelivr);
+      // Also listen for mirror selection change
+      mirrorSelect.addEventListener("change", convertToJsDelivr);
+
+      function convertToJsDelivr() {
+        // Get the GitHub link from input
+        const githubUrl = githubUrlInput.value.trim();
+        // Get the selected mirror site
+        const mirrorBase = mirrorSelect.value;
+
+        // Check if input is empty
+        if (!githubUrl) {
+          jsDelivrUrl.value = "Please enter a valid GitHub link!";
+          return;
+        }
+
+        // Check if it's a GitHub link
+        if (
+          !githubUrl.includes("github.com") &&
+          !githubUrl.includes("raw.githubusercontent.com")
+        ) {
+          jsDelivrUrl.value = "Please enter a valid GitHub link!";
+          return;
+        }
+
+        // Check if it's a Gist link
+        if (
+          githubUrl.includes("gist.github.com") ||
+          githubUrl.includes("gist.githubusercontent.com")
+        ) {
+          jsDelivrUrl.value = "Gist links are not supported for conversion!";
+          return;
+        }
+
+        try {
+          let user, repo, branch, filePath;
+
+          // Handle github.com blob links
+          if (githubUrl.includes("github.com") && githubUrl.includes("blob")) {
+            const match = githubUrl.match(
+              /github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/
+            );
+            if (!match) {
+              jsDelivrUrl.value =
+                "Invalid link format. Please ensure it is a GitHub file blob link!";
+              return;
+            }
+            [, user, repo, branch, filePath] = match;
+          }
+          // Handle github.com raw links
+          else if (
+            githubUrl.includes("github.com") &&
+            githubUrl.includes("raw")
+          ) {
+            const match = githubUrl.match(
+              /github\.com\/([^/]+)\/([^/]+)\/raw\/([^/]+)\/(.+)/
+            );
+            if (!match) {
+              jsDelivrUrl.value =
+                "Invalid link format. Please ensure it is a GitHub file raw link!";
+              return;
+            }
+            [, user, repo, branch, filePath] = match;
+          }
+          // Handle raw.githubusercontent.com links
+          else if (githubUrl.includes("raw.githubusercontent.com")) {
+            const match = githubUrl.match(
+              /raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/
+            );
+            if (!match) {
+              jsDelivrUrl.value =
+                "Invalid link format. Please ensure it is a GitHub file raw link!";
+              return;
+            }
+            [, user, repo, branch, filePath] = match;
+
+            // Handle refs/heads/ format, replace with branch name
+            if (branch.includes("refs/heads/")) {
+              branch = branch.replace("refs/heads/", "");
+            }
+          } else {
+            jsDelivrUrl.value =
+              "Invalid link format. Only GitHub blob or raw links are supported!";
+            return;
+          }
+
+          // Convert to jsDelivr link using the selected mirror
+          const convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
+          jsDelivrUrl.value = convertedUrl;
+        } catch (error) {
+          jsDelivrUrl.value =
+            "Conversion failed. Please check the link format!";
+        }
+      }
+
+      // Copy the converted link to clipboard
+      function copyToClipboard() {
+        const jsDelivrUrl = document.getElementById("jsDelivrUrl");
+        if (
+          jsDelivrUrl.value &&
+          jsDelivrUrl.value !== "Please enter a valid GitHub link!" &&
+          jsDelivrUrl.value !==
+            "Invalid link format. Please ensure it is a GitHub file blob link!" &&
+          jsDelivrUrl.value !==
+            "Invalid link format. Please ensure it is a GitHub file raw link!" &&
+          jsDelivrUrl.value !==
+            "Invalid link format. Only GitHub blob or raw links are supported!" &&
+          jsDelivrUrl.value !==
+            "Conversion failed. Please check the link format!" &&
+          jsDelivrUrl.value !== "Gist links are not supported for conversion!"
+        ) {
+          navigator.clipboard
+            .writeText(jsDelivrUrl.value)
+            .then(() => {
+              alert("Link copied to clipboard!");
+            })
+            .catch((err) => {
+              alert("Failed to copy link: " + err);
+            });
+        } else {
+          alert("No valid link to copy!");
+        }
+      }
+    </script>
+  </body>
+</html>
