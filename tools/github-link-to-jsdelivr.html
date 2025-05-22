@@ -25,7 +25,7 @@
         box-sizing: border-box;
       }
       textarea {
-        height: 100px;
+        height: 200px;
         resize: vertical;
       }
       button {
@@ -47,39 +47,103 @@
         display: flex;
         justify-content: center;
       }
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-bottom: none;
+        margin-bottom: -1px;
+      }
+      .tab.active {
+        background-color: white;
+        border-bottom: 1px solid white;
+        margin-bottom: -1px;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
     </style>
   </head>
   <body>
     <h2>GitHub to jsDelivr Link Converter</h2>
     <div class="container">
-      <label for="githubUrl">Enter GitHub Link:</label>
-      <input
-        type="text"
-        id="githubUrl"
-        placeholder="e.g., https://github.com/user/repo/blob/main/file.js or https://raw.githubusercontent.com/user/repo/main/file.js"
-      />
-
-      <div class="mirror-select">
-        <label for="mirror">Select Mirror Site:</label>
-        <select id="mirror">
-          <option value="https://cdn.jsdelivr.net">
-            jsDelivr (Global Default)
-          </option>
-          <option value="https://cdn.jsdmirror.com">
-            jsDelivr Mirror (China Optimized)
-          </option>
-        </select>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('single')">Single Link</div>
+        <div class="tab" onclick="switchTab('batch')">Batch Processing</div>
       </div>
 
-      <label for="jsDelivrUrl">Converted Link:</label>
-      <textarea
-        id="jsDelivrUrl"
-        readonly
-        placeholder="The converted link will be displayed here"
-      ></textarea>
+      <div id="single" class="tab-content active">
+        <label for="githubUrl">Enter GitHub Link:</label>
+        <input
+          type="text"
+          id="githubUrl"
+          placeholder="e.g., https://github.com/user/repo/blob/main/file.js or https://raw.githubusercontent.com/user/repo/main/file.js"
+        />
 
-      <div class="button-group">
-        <button onclick="copyToClipboard()">Copy Link</button>
+        <div class="mirror-select">
+          <label for="mirror">Select Mirror Site:</label>
+          <select id="mirror">
+            <option value="https://cdn.jsdelivr.net">
+              jsDelivr (Global Default)
+            </option>
+            <option value="https://cdn.jsdmirror.com">
+              jsDelivr Mirror (China Optimized)
+            </option>
+          </select>
+        </div>
+
+        <label for="jsDelivrUrl">Converted Link:</label>
+        <textarea
+          id="jsDelivrUrl"
+          readonly
+          placeholder="The converted link will be displayed here"
+          style="height: 100px"
+        ></textarea>
+
+        <div class="button-group">
+          <button onclick="copyToClipboard('jsDelivrUrl')">Copy Link</button>
+        </div>
+      </div>
+
+      <div id="batch" class="tab-content">
+        <label for="batchInput">Enter Text with GitHub Links:</label>
+        <textarea
+          id="batchInput"
+          placeholder="Paste text containing GitHub links here. All links will be converted to jsDelivr links."
+        ></textarea>
+
+        <div class="mirror-select">
+          <label for="mirrorBatch">Select Mirror Site:</label>
+          <select id="mirrorBatch">
+            <option value="https://cdn.jsdelivr.net">
+              jsDelivr (Global Default)
+            </option>
+            <option value="https://cdn.jsdmirror.com">
+              jsDelivr Mirror (China Optimized)
+            </option>
+          </select>
+        </div>
+
+        <label for="batchOutput">Converted Text:</label>
+        <textarea
+          id="batchOutput"
+          readonly
+          placeholder="The text with converted links will be displayed here."
+        ></textarea>
+
+        <div class="button-group">
+          <button onclick="convertBatch()">Convert</button>
+          <button onclick="copyToClipboard('batchOutput')">Copy Text</button>
+        </div>
       </div>
     </div>
 
@@ -87,32 +151,42 @@
       // Detect language and set default mirror
       const userLang = navigator.language || navigator.userLanguage;
       const mirrorSelect = document.getElementById("mirror");
+      const mirrorBatchSelect = document.getElementById("mirrorBatch");
       if (userLang === "zh-CN" || userLang === "zh") {
         mirrorSelect.value = "https://cdn.jsdmirror.com";
+        mirrorBatchSelect.value = "https://cdn.jsdmirror.com";
       }
 
-      // Get input and output elements
+      // Single link conversion elements
       const githubUrlInput = document.getElementById("githubUrl");
       const jsDelivrUrl = document.getElementById("jsDelivrUrl");
 
-      // Add input event listener for automatic conversion
+      // Add input event listener for automatic conversion in single link mode
       githubUrlInput.addEventListener("input", convertToJsDelivr);
-      // Also listen for mirror selection change
       mirrorSelect.addEventListener("change", convertToJsDelivr);
 
+      // Tab switching
+      function switchTab(tabId) {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".tab-content");
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        contents.forEach((content) => content.classList.remove("active"));
+        document
+          .querySelector(`[onclick="switchTab('${tabId}')"]`)
+          .classList.add("active");
+        document.getElementById(tabId).classList.add("active");
+      }
+
+      // Single link conversion
       function convertToJsDelivr() {
-        // Get the GitHub link from input
         const githubUrl = githubUrlInput.value.trim();
-        // Get the selected mirror site
         const mirrorBase = mirrorSelect.value;
 
-        // Check if input is empty
         if (!githubUrl) {
           jsDelivrUrl.value = "Please enter a valid GitHub link!";
           return;
         }
 
-        // Check if it's a GitHub link
         if (
           !githubUrl.includes("github.com") &&
           !githubUrl.includes("raw.githubusercontent.com")
@@ -121,7 +195,6 @@
           return;
         }
 
-        // Check if it's a Gist link
         if (
           githubUrl.includes("gist.github.com") ||
           githubUrl.includes("gist.githubusercontent.com")
@@ -132,8 +205,6 @@
 
         try {
           let user, repo, branch, filePath;
-
-          // Handle github.com blob links
           if (githubUrl.includes("github.com") && githubUrl.includes("blob")) {
             const match = githubUrl.match(
               /github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/
@@ -144,9 +215,7 @@
               return;
             }
             [, user, repo, branch, filePath] = match;
-          }
-          // Handle github.com raw links
-          else if (
+          } else if (
             githubUrl.includes("github.com") &&
             githubUrl.includes("raw")
           ) {
@@ -159,9 +228,7 @@
               return;
             }
             [, user, repo, branch, filePath] = match;
-          }
-          // Handle raw.githubusercontent.com links
-          else if (githubUrl.includes("raw.githubusercontent.com")) {
+          } else if (githubUrl.includes("raw.githubusercontent.com")) {
             const match = githubUrl.match(
               /raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/
             );
@@ -171,8 +238,6 @@
               return;
             }
             [, user, repo, branch, filePath] = match;
-
-            // Handle refs/heads/ format, replace with branch name
             if (branch.includes("refs/heads/")) {
               branch = branch.replace("refs/heads/", "");
             }
@@ -182,7 +247,6 @@
             return;
           }
 
-          // Convert to jsDelivr link using the selected mirror
           const convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
           jsDelivrUrl.value = convertedUrl;
         } catch (error) {
@@ -191,32 +255,101 @@
         }
       }
 
-      // Copy the converted link to clipboard
-      function copyToClipboard() {
-        const jsDelivrUrl = document.getElementById("jsDelivrUrl");
+      // Batch conversion
+      function convertBatch() {
+        const batchInput = document.getElementById("batchInput").value;
+        const mirrorBase = document.getElementById("mirrorBatch").value;
+        const batchOutput = document.getElementById("batchOutput");
+
+        if (!batchInput) {
+          batchOutput.value = "Please enter text containing GitHub links!";
+          return;
+        }
+
+        // Regular expression to match GitHub links
+        const githubRegex =
+          /(https?:\/\/(?:github\.com\/[^/]+\/[^/]+\/(?:blob|raw)\/[^/]+\/.+|raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[^/]+\/.+))/g;
+        let result = batchInput;
+        const matches = batchInput.match(githubRegex);
+
+        if (matches) {
+          matches.forEach((link) => {
+            // Skip Gist links
+            if (
+              link.includes("gist.github.com") ||
+              link.includes("gist.githubusercontent.com")
+            ) {
+              return;
+            }
+
+            try {
+              let user, repo, branch, filePath;
+              if (link.includes("github.com") && link.includes("blob")) {
+                const match = link.match(
+                  /github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/
+                );
+                if (match) {
+                  [, user, repo, branch, filePath] = match;
+                }
+              } else if (link.includes("github.com") && link.includes("raw")) {
+                const match = link.match(
+                  /github\.com\/([^/]+)\/([^/]+)\/raw\/([^/]+)\/(.+)/
+                );
+                if (match) {
+                  [, user, repo, branch, filePath] = match;
+                }
+              } else if (link.includes("raw.githubusercontent.com")) {
+                const match = link.match(
+                  /raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/
+                );
+                if (match) {
+                  [, user, repo, branch, filePath] = match;
+                  if (branch.includes("refs/heads/")) {
+                    branch = branch.replace("refs/heads/", "");
+                  }
+                }
+              }
+
+              if (user && repo && branch && filePath) {
+                const convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
+                result = result.replace(link, convertedUrl);
+              }
+            } catch (error) {
+              // Skip conversion if there's an error
+            }
+          });
+        }
+
+        batchOutput.value = result;
+      }
+
+      // Copy to clipboard
+      function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
         if (
-          jsDelivrUrl.value &&
-          jsDelivrUrl.value !== "Please enter a valid GitHub link!" &&
-          jsDelivrUrl.value !==
+          element.value &&
+          element.value !== "Please enter a valid GitHub link!" &&
+          element.value !==
             "Invalid link format. Please ensure it is a GitHub file blob link!" &&
-          jsDelivrUrl.value !==
+          element.value !==
             "Invalid link format. Please ensure it is a GitHub file raw link!" &&
-          jsDelivrUrl.value !==
+          element.value !==
             "Invalid link format. Only GitHub blob or raw links are supported!" &&
-          jsDelivrUrl.value !==
+          element.value !==
             "Conversion failed. Please check the link format!" &&
-          jsDelivrUrl.value !== "Gist links are not supported for conversion!"
+          element.value !== "Gist links are not supported for conversion!" &&
+          element.value !== "Please enter text containing GitHub links!"
         ) {
           navigator.clipboard
-            .writeText(jsDelivrUrl.value)
+            .writeText(element.value)
             .then(() => {
-              alert("Link copied to clipboard!");
+              alert("Content copied to clipboard!");
             })
             .catch((err) => {
-              alert("Failed to copy link: " + err);
+              alert("Failed to copy content: " + err);
             });
         } else {
-          alert("No valid link to copy!");
+          alert("No valid content to copy!");
         }
       }
     </script>
