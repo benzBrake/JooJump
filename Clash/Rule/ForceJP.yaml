@@ -1,0 +1,5 @@
+# NAME: ForceJP
+# AUTHOR: benzBrake
+# REPO: https://github.com/benzBrake/JooJump
+payload:
+  - DOMAIN-SUFFIX,getuploader.com
