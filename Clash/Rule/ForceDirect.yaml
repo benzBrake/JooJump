@@ -1,0 +1,5 @@
+# NAME: ForceDirect
+# AUTHOR: benzBrake
+# REPO: https://github.com/benzBrake/JooJump
+payload:
+  - DOMAIN-SUFFIX,gomicx.net
