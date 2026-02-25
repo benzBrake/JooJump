@@ -75,8 +75,7 @@ proxy-groups:
 
   - name: 🔍 默认兜底
     type: select
-    use:
-      - all-proxies
+    include-all: true
     proxies:
       - ♻️ 自动选择
       - 🔰 节点选择
