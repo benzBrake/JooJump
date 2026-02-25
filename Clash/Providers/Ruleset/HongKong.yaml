@@ -1,4 +1,0 @@
-payload:
-  # 内容：强制走香港节点的网站
-  # 数量：1条
-  - DOMAIN-SUFFIX,nnr.moe
