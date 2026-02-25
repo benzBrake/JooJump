@@ -46,6 +46,13 @@ rule-providers:
     type: http
     behavior: classical
     format: text
+  cn-cidr:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/geoip@release/clash/ipcidr/cn.txt"
+    path: ./ruleset/ipcidr/cn.yaml
+    interval: 86400
   openai:
     type: http
     behavior: classical
