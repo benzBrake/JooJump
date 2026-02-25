@@ -92,7 +92,7 @@ rule-providers:
     type: http
     behavior: ipcidr
     format: yaml
-    url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/geoip@release/clash/ipcidr/cn.txt"
+    url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
     path: ./ruleset/ipcidr/cn.yaml
     interval: 86400
   force-direct:
