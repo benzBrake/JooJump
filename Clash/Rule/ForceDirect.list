@@ -1,0 +1,47 @@
+# NAME: ForceDirect
+# AUTHOR: benzBrake
+# REPO: https://github.com/benzBrake/JooJump
+
+# Epicgames
+DOMAIN-SUFFIX,ol.epicgames.com
+
+# Origin
+DOMAIN,origin-a.akamaihd.net
+
+# Tencent
+DOMAIN,fairplay.l.qq.com
+DOMAIN,livew.l.qq.com
+DOMAIN,vd.l.qq.com
+
+# 粤漫社
+DOMAIN-SUFFIX,gomicx.net
+
+# 智普
+DOMAIN-SUFFIX,sensorsdata.cn
+
+# 群晖ddns
+DOMAIN-SUFFIX,synology.me
+DOMAIN-SUFFIX,DiskStation.me
+DOMAIN-SUFFIX,i234.me
+DOMAIN-SUFFIX,myDS.me
+DOMAIN-SUFFIX,DSCloud.biz
+DOMAIN-SUFFIX,DSCloud.me
+DOMAIN-SUFFIX,DSCloud.mobi
+DOMAIN-SUFFIX,DSmyNAS.com
+DOMAIN-SUFFIX,DSmyNAS.net
+DOMAIN-SUFFIX,DSmyNAS.org
+DOMAIN-SUFFIX,FamilyDS.com
+DOMAIN-SUFFIX,FamilyDS.net
+DOMAIN-SUFFIX,FamilyDS.org
+
+# Google
+DOMAIN,dl.google.com
+DOMAIN-SUFFIX,googletraveladservices.com
+
+
+# Tracking
+DOMAIN-SUFFIX,tracking-protection.cdn.mozilla.net
+DOMAIN,errlog.umeng.com
+DOMAIN,msg.umeng.com
+DOMAIN,msg.umengcloud.com
+DOMAIN,tracking.miui.com
