@@ -14,12 +14,13 @@ proxy-groups:
     type: select
     include-all: true
     interval: 3600
-    health-check:
-      enable: true
-      interval: 600
-      url: http://www.gstatic.com/generate_204
     proxies:
       - 📶 直接连接
+
+  - name: 🇭🇰 香港落地
+    type: select
+    include-all: true
+    filter: "(?i)🇭🇰|香港|HK|Hong Kong"
 
   - name: 🇯🇵 日本落地
     type: select
@@ -36,22 +37,28 @@ proxy-groups:
     include-all: true
     proxies:
       - ♻️ 自动选择
-      - DIRECT
+      - 🇭🇰 香港落地
+      - 🇯🇵 日本落地
+      - 🇺🇸 美国落地
 
   - name: ֎ OpenAI
     include-all: true
     interval: 3600
-    health-check:
-      enable: true
-      interval: 600
-      url: http://www.gstatic.com/generate_204
     type: select
+    proxies:
+      - ♻️ 自动选择
+      - 🇭🇰 香港落地
+      - 🇯🇵 日本落地
+      - 🇺🇸 美国落地
 
   - name: ⚎ Gemini
     type: select
     include-all: true
     proxies:
       - ♻️ 自动选择
+      - 🇭🇰 香港落地
+      - 🇯🇵 日本落地
+      - 🇺🇸 美国落地
 
   - name: 🎓 谷歌学术
     type: select
@@ -142,19 +149,25 @@ rule-providers:
     interval: 86400
 
 rules:
-  # 直连
+  # 强制直连
+  - "RULE-SET, force-direct, DIRECT"
+
+  # 国内流量直连
   - "RULE-SET, lan, DIRECT"
   - "RULE-SET,cn-cidr,DIRECT"
   - "GEOSITE,CN,DIRECT"
   - "GEOIP,CN,DIRECT"
-  - "RULE-SET, force-direct, DIRECT"
+
+  # 广告拦截
+  - "RULE-SET, reject, ⛔️ 禁止连接"
+
   - "DOMAIN-SUFFIX,adobe.io,REJECT"
   - "DOMAIN-SUFFIX,*.adobe.io,REJECT"
   - "DOMAIN-SUFFIX,adobestats.io,REJECT"
   - "DOMAIN-SUFFIX,photo-api.adobe.io,DIRECT"
   - "DOMAIN-KEYWORD,adobe,DIRECT"
-  - "RULE-SET, reject, ⛔️ 禁止连接"
-  # 代理
+
+  # 业务规则
   - "RULE-SET, force-jp, 🇯🇵 日本落地"
   - "DOMAIN-SUFFIX,gov,🇺🇸 美国落地"
   - "DOMAIN-SUFFIX,mil,🇺🇸 美国落地"
@@ -162,8 +175,9 @@ rules:
   - "RULE-SET, openai, ֎ OpenAI"
   - "RULE-SET, gemini, ⚎ Gemini"
   - "DOMAIN,scholar.google.com,🎓 谷歌学术"
-  # IPV6
+
+  # IPv6 流量
   - IP-CIDR6,::/0,🌐 IPv6专用,no-resolve
-  - IP-CIDR6,2000::/3,🌐 IPv6专用
+
   # 兜底
   - "MATCH, 🔍 默认兜底"
