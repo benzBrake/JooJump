@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub to jsDelivr Link Converter</title>
+    <title>CDN Link Converter (GitHub & npm)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -145,129 +145,129 @@
         // Language pack
         const translations = {
             'en': {
-                title: 'GitHub to jsDelivr Link Converter',
+                title: 'CDN Link Converter (GitHub & npm)',
                 tabSingle: 'Single Link',
                 tabBatch: 'Batch Processing',
-                labelInput: 'Enter GitHub Link:',
-                placeholderInput: 'e.g., https://github.com/user/repo/blob/main/file.js or https://raw.githubusercontent.com/user/repo/main/file.js',
+                labelInput: 'Enter GitHub/npm Link:',
+                placeholderInput: 'e.g., https://github.com/user/repo/blob/main/file.js, https://cdn.jsdelivr.net/npm/package@version/file.js, or https://raw.githubusercontent.com/user/repo/main/file.js',
                 labelMirror: 'Select Mirror Site:',
                 mirrorJsdelivr: 'jsDelivr (Global Default)',
                 mirrorJsdm: 'jsDelivr Mirror (China Optimized)',
                 labelOutput: 'Converted Link:',
                 placeholderOutput: 'The converted link will be displayed here',
                 btnCopy: 'Copy Link',
-                labelBatchInput: 'Enter Text with GitHub Links:',
-                placeholderBatchInput: 'Paste text containing GitHub links here. All links will be converted.',
+                labelBatchInput: 'Enter Text with GitHub/npm Links:',
+                placeholderBatchInput: 'Paste text containing GitHub or npm CDN links here. All links will be converted.',
                 labelBatchOutput: 'Converted Text:',
                 placeholderBatchOutput: 'The text with converted links will be displayed here.',
                 btnConvert: 'Convert',
                 btnCopyText: 'Copy Text',
-                alertEmptyLink: 'Please enter a valid GitHub link!',
-                alertInvalidLink: 'Please enter a valid GitHub or CDN link!',
+                alertEmptyLink: 'Please enter a valid GitHub or npm link!',
+                alertInvalidLink: 'Please enter a valid GitHub, npm, or CDN link!',
                 alertInvalidBlob: 'Invalid link format. Please ensure it is a GitHub file blob link!',
                 alertInvalidRaw: 'Invalid link format. Please ensure it is a GitHub file raw link!',
-                alertInvalidFormat: 'Invalid link format. Only GitHub blob, raw, jsDelivr, or jsdmirror links are supported!',
+                alertInvalidFormat: 'Invalid link format. Only GitHub blob/raw, npm, jsDelivr, or jsdmirror links are supported!',
                 alertInvalidJsdelivr: 'Invalid link format. Please ensure it is a valid jsDelivr link!',
                 alertInvalidJsdm: 'Invalid link format. Please ensure it is a valid jsdmirror link!',
                 alertSameMirror: 'Input is already a {mirror} link. Please select a different mirror to convert.',
                 alertConversionFailed: 'Conversion failed. Please check the link format!',
-                alertEmptyBatch: 'Please enter text containing GitHub links!',
+                alertEmptyBatch: 'Please enter text containing GitHub or npm CDN links!',
                 alertCopied: 'Content copied to clipboard!',
                 alertCopyFailed: 'Failed to copy content: ',
                 alertNoValidContent: 'No valid content to copy!'
             },
             'zh-CN': {
-                title: 'GitHub 转 jsDelivr 链接转换器',
+                title: 'CDN 链接转换器 (GitHub & npm)',
                 tabSingle: '单链接转换',
                 tabBatch: '批量处理',
-                labelInput: '输入 GitHub 链接：',
-                placeholderInput: '例如：https://github.com/user/repo/blob/main/file.js 或 https://raw.githubusercontent.com/user/repo/main/file.js',
+                labelInput: '输入 GitHub/npm 链接：',
+                placeholderInput: '例如：https://github.com/user/repo/blob/main/file.js、https://cdn.jsdelivr.net/npm/package@version/file.js 或 https://raw.githubusercontent.com/user/repo/main/file.js',
                 labelMirror: '选择镜像站点：',
                 mirrorJsdelivr: 'jsDelivr (全球默认)',
                 mirrorJsdm: 'jsDelivr 镜像 (国内优化)',
                 labelOutput: '转换后链接：',
                 placeholderOutput: '转换后的链接将显示在这里',
                 btnCopy: '复制链接',
-                labelBatchInput: '输入包含 GitHub 链接的文本：',
-                placeholderBatchInput: '在此粘贴包含 GitHub 链接的文本，所有链接将被转换。',
+                labelBatchInput: '输入包含 GitHub/npm 链接的文本：',
+                placeholderBatchInput: '在此粘贴包含 GitHub 或 npm CDN 链接的文本，所有链接将被转换。',
                 labelBatchOutput: '转换后文本：',
                 placeholderBatchOutput: '转换后的文本将显示在这里。',
                 btnConvert: '转换',
                 btnCopyText: '复制文本',
-                alertEmptyLink: '请输入有效的 GitHub 链接！',
-                alertInvalidLink: '请输入有效的 GitHub 或 CDN 链接！',
+                alertEmptyLink: '请输入有效的 GitHub 或 npm 链接！',
+                alertInvalidLink: '请输入有效的 GitHub、npm 或 CDN 链接！',
                 alertInvalidBlob: '链接格式无效。请确保是 GitHub 文件 blob 链接！',
                 alertInvalidRaw: '链接格式无效。请确保是 GitHub 文件 raw 链接！',
-                alertInvalidFormat: '链接格式无效。仅支持 GitHub blob、raw、jsDelivr 或 jsdmirror 链接！',
+                alertInvalidFormat: '链接格式无效。仅支持 GitHub blob/raw、npm、jsDelivr 或 jsdmirror 链接！',
                 alertInvalidJsdelivr: '链接格式无效。请确保是有效的 jsDelivr 链接！',
                 alertInvalidJsdm: '链接格式无效。请确保是有效的 jsdmirror 链接！',
                 alertSameMirror: '输入已经是 {mirror} 链接。请选择其他镜像进行转换。',
                 alertConversionFailed: '转换失败。请检查链接格式！',
-                alertEmptyBatch: '请输入包含 GitHub 链接的文本！',
+                alertEmptyBatch: '请输入包含 GitHub 或 npm CDN 链接的文本！',
                 alertCopied: '内容已复制到剪贴板！',
                 alertCopyFailed: '复制失败：',
                 alertNoValidContent: '没有有效内容可复制！'
             },
             'zh-TW': {
-                title: 'GitHub 转 jsDelivr 連結轉換器',
+                title: 'CDN 連結轉換器 (GitHub & npm)',
                 tabSingle: '單連結轉換',
                 tabBatch: '批次處理',
-                labelInput: '輸入 GitHub 連結：',
-                placeholderInput: '例如：https://github.com/user/repo/blob/main/file.js 或 https://raw.githubusercontent.com/user/repo/main/file.js',
+                labelInput: '輸入 GitHub/npm 連結：',
+                placeholderInput: '例如：https://github.com/user/repo/blob/main/file.js、https://cdn.jsdelivr.net/npm/package@version/file.js 或 https://raw.githubusercontent.com/user/repo/main/file.js',
                 labelMirror: '選擇鏡像站點：',
                 mirrorJsdelivr: 'jsDelivr (全球預設)',
                 mirrorJsdm: 'jsDelivr 鏡像 (國內優化)',
                 labelOutput: '轉換後連結：',
                 placeholderOutput: '轉換後的連結將顯示在這裡',
                 btnCopy: '複製連結',
-                labelBatchInput: '輸入包含 GitHub 連結的文本：',
-                placeholderBatchInput: '在此貼上包含 GitHub 連結的文本，所有連結將被轉換。',
+                labelBatchInput: '輸入包含 GitHub/npm 連結的文本：',
+                placeholderBatchInput: '在此貼上包含 GitHub 或 npm CDN 連結的文本，所有連結將被轉換。',
                 labelBatchOutput: '轉換後文本：',
                 placeholderBatchOutput: '轉換後的文本將顯示在這裡。',
                 btnConvert: '轉換',
                 btnCopyText: '複製文本',
-                alertEmptyLink: '請輸入有效的 GitHub 連結！',
-                alertInvalidLink: '請輸入有效的 GitHub 或 CDN 連結！',
+                alertEmptyLink: '請輸入有效的 GitHub 或 npm 連結！',
+                alertInvalidLink: '請輸入有效的 GitHub、npm 或 CDN 連結！',
                 alertInvalidBlob: '連結格式無效。請確保是 GitHub 文件 blob 連結！',
                 alertInvalidRaw: '連結格式無效。請確保是 GitHub 文件 raw 連結！',
-                alertInvalidFormat: '連結格式無效。僅支援 GitHub blob、raw、jsDelivr 或 jsdmirror 連結！',
+                alertInvalidFormat: '連結格式無效。僅支援 GitHub blob/raw、npm、jsDelivr 或 jsdmirror 連結！',
                 alertInvalidJsdelivr: '連結格式無效。請確保是有效的 jsDelivr 連結！',
                 alertInvalidJsdm: '連結格式無效。請確保是有效的 jsdmirror 連結！',
                 alertSameMirror: '輸入已經是 {mirror} 連結。請選擇其他鏡像進行轉換。',
                 alertConversionFailed: '轉換失敗。請檢查連結格式！',
-                alertEmptyBatch: '請輸入包含 GitHub 連結的文本！',
+                alertEmptyBatch: '請輸入包含 GitHub 或 npm CDN 連結的文本！',
                 alertCopied: '內容已複製到剪貼板！',
                 alertCopyFailed: '複製失敗：',
                 alertNoValidContent: '沒有有效內容可複製！'
             },
             'ja': {
-                title: 'GitHub から jsDelivr へのリンク変換ツール',
+                title: 'CDN リンク変換ツール (GitHub & npm)',
                 tabSingle: '単一リンク',
                 tabBatch: '一括処理',
-                labelInput: 'GitHubリンクを入力：',
-                placeholderInput: '例: https://github.com/user/repo/blob/main/file.js または https://raw.githubusercontent.com/user/repo/main/file.js',
+                labelInput: 'GitHub/npm リンクを入力：',
+                placeholderInput: '例: https://github.com/user/repo/blob/main/file.js、https://cdn.jsdelivr.net/npm/package@version/file.js または https://raw.githubusercontent.com/user/repo/main/file.js',
                 labelMirror: 'ミラーサイトを選択：',
                 mirrorJsdelivr: 'jsDelivr (グローバル標準)',
                 mirrorJsdm: 'jsDelivr ミラー (中国向け最適化)',
                 labelOutput: '変換後のリンク：',
                 placeholderOutput: '変換されたリンクがここに表示されます',
                 btnCopy: 'リンクをコピー',
-                labelBatchInput: 'GitHubリンクを含むテキストを入力：',
-                placeholderBatchInput: 'GitHubリンクを含むテキストをここに貼り付けます。すべてのリンクが変換されます。',
+                labelBatchInput: 'GitHub/npm リンクを含むテキストを入力：',
+                placeholderBatchInput: 'GitHub または npm CDN リンクを含むテキストをここに貼り付けます。すべてのリンクが変換されます。',
                 labelBatchOutput: '変換後のテキスト：',
                 placeholderBatchOutput: '変換されたテキストがここに表示されます。',
                 btnConvert: '変換',
                 btnCopyText: 'テキストをコピー',
-                alertEmptyLink: '有効なGitHubリンクを入力してください！',
-                alertInvalidLink: '有効なGitHubまたはCDNリンクを入力してください！',
+                alertEmptyLink: '有効な GitHub または npm リンクを入力してください！',
+                alertInvalidLink: '有効な GitHub、npm、または CDN リンクを入力してください！',
                 alertInvalidBlob: 'リンク形式が無効です。GitHubファイルのblobリンクであることを確認してください！',
                 alertInvalidRaw: 'リンク形式が無効です。GitHubファイルのrawリンクであることを確認してください！',
-                alertInvalidFormat: 'リンク形式が無効です。GitHubのblob、raw、jsDelivr、またはjsdmirrorリンクのみサポートされています！',
+                alertInvalidFormat: 'リンク形式が無効です。GitHubのblob/raw、npm、jsDelivr、またはjsdmirrorリンクのみサポートされています！',
                 alertInvalidJsdelivr: 'リンク形式が無効です。有効なjsDelivrリンクであることを確認してください！',
                 alertInvalidJsdm: 'リンク形式が無効です。有効なjsdmirrorリンクであることを確認してください！',
                 alertSameMirror: '入力は既に{mirror}リンクです。変換するには別のミラーを選択してください。',
                 alertConversionFailed: '変換に失敗しました。リンク形式を確認してください！',
-                alertEmptyBatch: 'GitHubリンクを含むテキストを入力してください！',
+                alertEmptyBatch: 'GitHub または npm CDN リンクを含むテキストを入力してください！',
                 alertCopied: 'コンテンツがクリップボードにコピーされました！',
                 alertCopyFailed: 'コピーに失敗しました：',
                 alertNoValidContent: 'コピーする有効なコンテンツがありません！'
@@ -374,7 +374,7 @@
                 return;
             }
 
-            if (!githubUrl.includes('github.com') && !githubUrl.includes('raw.githubusercontent.com') && !githubUrl.includes('cdn.jsdelivr.net') && !githubUrl.includes('cdn.jsdmirror.com')) {
+            if (!githubUrl.includes('github.com') && !githubUrl.includes('raw.githubusercontent.com') && !githubUrl.includes('cdn.jsdelivr.net') && !githubUrl.includes('cdn.jsdmirror.com') && !githubUrl.includes('npm')) {
                 jsDelivrUrl.value = t('alertInvalidLink');
                 return;
             }
@@ -382,7 +382,10 @@
             try {
                 let user, repo, branch, filePath;
                 let inputCdnBase = null;
+                let npmPackage, npmVersion, npmPath;
+                let isNpmPackage = false;
 
+                // GitHub blob link
                 if (githubUrl.includes('github.com') && githubUrl.includes('blob')) {
                     const match = githubUrl.match(/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/);
                     if (!match) {
@@ -390,14 +393,18 @@
                         return;
                     }
                     [, user, repo, branch, filePath] = match;
-                } else if (githubUrl.includes('github.com') && githubUrl.includes('raw')) {
+                }
+                // GitHub raw link
+                else if (githubUrl.includes('github.com') && githubUrl.includes('raw')) {
                     const match = githubUrl.match(/github\.com\/([^/]+)\/([^/]+)\/raw\/([^/]+)\/(.+)/);
                     if (!match) {
                         jsDelivrUrl.value = t('alertInvalidRaw');
                         return;
                     }
                     [, user, repo, branch, filePath] = match;
-                } else if (githubUrl.includes('raw.githubusercontent.com')) {
+                }
+                // GitHub raw usercontent link
+                else if (githubUrl.includes('raw.githubusercontent.com')) {
                     const match = githubUrl.match(/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/);
                     if (!match) {
                         jsDelivrUrl.value = t('alertInvalidRaw');
@@ -407,7 +414,9 @@
                     if (branch.includes('refs/heads/')) {
                         branch = branch.replace('refs/heads/', '');
                     }
-                } else if (githubUrl.includes('cdn.jsdelivr.net') && githubUrl.includes('gh/')) {
+                }
+                // jsDelivr GitHub link
+                else if (githubUrl.includes('cdn.jsdelivr.net') && githubUrl.includes('gh/')) {
                     const match = githubUrl.match(/cdn\.jsdelivr\.net\/gh\/([^/]+)\/([^@]+)@([^/]+)\/(.+)/);
                     if (!match) {
                         jsDelivrUrl.value = t('alertInvalidJsdelivr');
@@ -415,7 +424,9 @@
                     }
                     [, user, repo, branch, filePath] = match;
                     inputCdnBase = 'https://cdn.jsdelivr.net';
-                } else if (githubUrl.includes('cdn.jsdmirror.com') && githubUrl.includes('gh/')) {
+                }
+                // jsdmirror GitHub link
+                else if (githubUrl.includes('cdn.jsdmirror.com') && githubUrl.includes('gh/')) {
                     const match = githubUrl.match(/cdn\.jsdmirror\.com\/gh\/([^/]+)\/([^@]+)@([^/]+)\/(.+)/);
                     if (!match) {
                         jsDelivrUrl.value = t('alertInvalidJsdm');
@@ -423,12 +434,40 @@
                     }
                     [, user, repo, branch, filePath] = match;
                     inputCdnBase = 'https://cdn.jsdmirror.com';
-                } else {
+                }
+                // jsDelivr npm link
+                else if (githubUrl.includes('cdn.jsdelivr.net') && githubUrl.includes('npm/')) {
+                    const match = githubUrl.match(/cdn\.jsdelivr\.net\/npm\/([^@]+)@([^/]+)\/(.+)/);
+                    if (!match) {
+                        jsDelivrUrl.value = t('alertInvalidJsdelivr');
+                        return;
+                    }
+                    [, npmPackage, npmVersion, npmPath] = match;
+                    inputCdnBase = 'https://cdn.jsdelivr.net';
+                    isNpmPackage = true;
+                }
+                // jsdmirror npm link
+                else if (githubUrl.includes('cdn.jsdmirror.com') && githubUrl.includes('npm/')) {
+                    const match = githubUrl.match(/cdn\.jsdmirror\.com\/npm\/([^@]+)@([^/]+)\/(.+)/);
+                    if (!match) {
+                        jsDelivrUrl.value = t('alertInvalidJsdm');
+                        return;
+                    }
+                    [, npmPackage, npmVersion, npmPath] = match;
+                    inputCdnBase = 'https://cdn.jsdmirror.com';
+                    isNpmPackage = true;
+                }
+                else {
                     jsDelivrUrl.value = t('alertInvalidFormat');
                     return;
                 }
 
-                const convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
+                let convertedUrl;
+                if (isNpmPackage) {
+                    convertedUrl = `${mirrorBase}/npm/${npmPackage}@${npmVersion}/${npmPath}`;
+                } else {
+                    convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
+                }
 
                 // 如果输入是 CDN 链接且选中的是相同的镜像，显示提示信息
                 if (inputCdnBase && inputCdnBase === mirrorBase) {
@@ -453,7 +492,7 @@
             }
 
             // Regular expression to match GitHub and CDN links
-            const githubRegex = /(https?:\/\/(?:github\.com\/[^/]+\/[^/]+\/(?:blob|raw)\/[^/]+\/.+|raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[^/]+\/.+|cdn\.jsdelivr\.net\/gh\/[^/]+\/[^@]+@[^/]+\/.+|cdn\.jsdmirror\.com\/gh\/[^/]+\/[^@]+@[^/]+\/.+))/g;
+            const githubRegex = /(https?:\/\/(?:github\.com\/[^/]+\/[^/]+\/(?:blob|raw)\/[^/]+\/.+|raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[^/]+\/.+|cdn\.jsdelivr\.net\/(?:gh|npm)\/[^/]+\/(?:[^@]+@)?[^/]+\/.+|cdn\.jsdmirror\.com\/(?:gh|npm)\/[^/]+\/(?:[^@]+@)?[^/]+\/.+))/g;
             let result = batchInput;
             const matches = batchInput.match(githubRegex);
 
@@ -461,19 +500,26 @@
                 matches.forEach(link => {
                     try {
                         let user, repo, branch, filePath;
+                        let npmPackage, npmVersion, npmPath;
                         let inputCdnBase = null;
+                        let isNpmPackage = false;
 
+                        // GitHub blob link
                         if (link.includes('github.com') && link.includes('blob')) {
                             const match = link.match(/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/);
                             if (match) {
                                 [, user, repo, branch, filePath] = match;
                             }
-                        } else if (link.includes('github.com') && link.includes('raw')) {
+                        }
+                        // GitHub raw link
+                        else if (link.includes('github.com') && link.includes('raw')) {
                             const match = link.match(/github\.com\/([^/]+)\/([^/]+)\/raw\/([^/]+)\/(.+)/);
                             if (match) {
                                 [, user, repo, branch, filePath] = match;
                             }
-                        } else if (link.includes('raw.githubusercontent.com')) {
+                        }
+                        // GitHub raw usercontent link
+                        else if (link.includes('raw.githubusercontent.com')) {
                             const match = link.match(/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)/);
                             if (match) {
                                 [, user, repo, branch, filePath] = match;
@@ -481,23 +527,49 @@
                                     branch = branch.replace('refs/heads/', '');
                                 }
                             }
-                        } else if (link.includes('cdn.jsdelivr.net') && link.includes('gh/')) {
+                        }
+                        // jsDelivr GitHub link
+                        else if (link.includes('cdn.jsdelivr.net') && link.includes('gh/')) {
                             const match = link.match(/cdn\.jsdelivr\.net\/gh\/([^/]+)\/([^@]+)@([^/]+)\/(.+)/);
                             if (match) {
                                 [, user, repo, branch, filePath] = match;
                                 inputCdnBase = 'https://cdn.jsdelivr.net';
                             }
-                        } else if (link.includes('cdn.jsdmirror.com') && link.includes('gh/')) {
+                        }
+                        // jsdmirror GitHub link
+                        else if (link.includes('cdn.jsdmirror.com') && link.includes('gh/')) {
                             const match = link.match(/cdn\.jsdmirror\.com\/gh\/([^/]+)\/([^@]+)@([^/]+)\/(.+)/);
                             if (match) {
                                 [, user, repo, branch, filePath] = match;
                                 inputCdnBase = 'https://cdn.jsdmirror.com';
                             }
                         }
+                        // jsDelivr npm link
+                        else if (link.includes('cdn.jsdelivr.net') && link.includes('npm/')) {
+                            const match = link.match(/cdn\.jsdelivr\.net\/npm\/([^@]+)@([^/]+)\/(.+)/);
+                            if (match) {
+                                [, npmPackage, npmVersion, npmPath] = match;
+                                inputCdnBase = 'https://cdn.jsdelivr.net';
+                                isNpmPackage = true;
+                            }
+                        }
+                        // jsdmirror npm link
+                        else if (link.includes('cdn.jsdmirror.com') && link.includes('npm/')) {
+                            const match = link.match(/cdn\.jsdmirror\.com\/npm\/([^@]+)@([^/]+)\/(.+)/);
+                            if (match) {
+                                [, npmPackage, npmVersion, npmPath] = match;
+                                inputCdnBase = 'https://cdn.jsdmirror.com';
+                                isNpmPackage = true;
+                            }
+                        }
 
+                        let convertedUrl;
                         // 只有当不是相同 CDN 到相同 CDN 的转换时才替换
-                        if (user && repo && branch && filePath && !(inputCdnBase && inputCdnBase === mirrorBase)) {
-                            const convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
+                        if (isNpmPackage && npmPackage && npmVersion && npmPath && !(inputCdnBase && inputCdnBase === mirrorBase)) {
+                            convertedUrl = `${mirrorBase}/npm/${npmPackage}@${npmVersion}/${npmPath}`;
+                            result = result.replace(link, convertedUrl);
+                        } else if (!isNpmPackage && user && repo && branch && filePath && !(inputCdnBase && inputCdnBase === mirrorBase)) {
+                            convertedUrl = `${mirrorBase}/gh/${user}/${repo}@${branch}/${filePath}`;
                             result = result.replace(link, convertedUrl);
                         }
                     } catch (error) {
