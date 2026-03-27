@@ -1,3 +1,31 @@
+dns:
+  enable: true
+  enhanced-mode: redir-host
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "+.*"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback-filter:
+    geoip: false
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "geosite:cn":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:china-max":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+
 proxy-groups:
   - name: 🔰 节点选择
     type: select
@@ -53,6 +81,13 @@ rule-providers:
     url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/geoip@release/clash/ipcidr/cn.txt"
     path: ./ruleset/ipcidr/cn.yaml
     interval: 86400
+  china-max:
+    type: http
+    behavior: domain
+    format: yaml
+    url: "https://cdn.jsdmirror.com/gh/Accademia/Additional_Rule_For_Clash@master/ChinaMax/ChinaMax_Domain.yaml"
+    path: ./ruleset/china-max.yaml
+    interval: 86400
   openai:
     type: http
     behavior: classical
@@ -62,14 +97,15 @@ rule-providers:
 
 rules:
   - "RULE-SET, lan, 📶 直接连接"
-  - "RULE-SET,cn-cidr,📶 直接连接"
-  - "GEOSITE,CN,📶 直接连接"
-  - "GEOIP,CN,📶 直接连接"
+  - "RULE-SET, cn-cidr, 📶 直接连接"
+  - "RULE-SET, china-max, 📶 直接连接"
+  - "GEOSITE, CN, 📶 直接连接"
+  - "GEOIP, CN, 📶 直接连接"
   - "RULE-SET, force-direct, 📶 直接连接"
-  - "DOMAIN-SUFFIX,adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,*.adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,adobestats.io,REJECT"
-  - "DOMAIN-SUFFIX,photo-api.adobe.io,DIRECT"
-  - "DOMAIN-KEYWORD,adobe,DIRECT"
+  - "DOMAIN-SUFFIX, adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, *.adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, adobestats.io, REJECT"
+  - "DOMAIN-SUFFIX, photo-api.adobe.io, DIRECT"
+  - "DOMAIN-KEYWORD, adobe, DIRECT"
   - "RULE-SET, openai, ֎ OpenAI"
   - "MATCH, 🔍 默认兜底"

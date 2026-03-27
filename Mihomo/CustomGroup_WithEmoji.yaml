@@ -1,3 +1,31 @@
+dns:
+  enable: true
+  enhanced-mode: redir-host
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "+.*"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback-filter:
+    geoip: false
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "geosite:cn":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:china-max":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+
 proxy-groups:
   - name: ♻️ 自动选择
     type: url-test
@@ -102,6 +130,13 @@ rule-providers:
     url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
     path: ./ruleset/ipcidr/cn.yaml
     interval: 86400
+  china-max:
+    type: http
+    behavior: domain
+    format: yaml
+    url: "https://cdn.jsdmirror.com/gh/Accademia/Additional_Rule_For_Clash@master/ChinaMax/ChinaMax_Domain.yaml"
+    path: ./ruleset/china-max.yaml
+    interval: 86400
   force-direct:
     url: "https://cdn.jsdmirror.com/gh/benzBrake/JooJump@master/Clash/ForceDirect.list"
     path: ./ruleset/force-direct.list
@@ -154,30 +189,31 @@ rules:
 
   # 国内流量直连
   - "RULE-SET, lan, DIRECT"
-  - "RULE-SET,cn-cidr,DIRECT"
-  - "GEOSITE,CN,DIRECT"
-  - "GEOIP,CN,DIRECT"
+  - "RULE-SET, cn-cidr, DIRECT"
+  - "RULE-SET, china-max, DIRECT"
+  - "GEOSITE, CN, DIRECT"
+  - "GEOIP, CN, DIRECT"
 
   # 广告拦截
   - "RULE-SET, reject, ⛔️ 禁止连接"
 
-  - "DOMAIN-SUFFIX,adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,*.adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,adobestats.io,REJECT"
-  - "DOMAIN-SUFFIX,photo-api.adobe.io,DIRECT"
-  - "DOMAIN-KEYWORD,adobe,DIRECT"
+  - "DOMAIN-SUFFIX, adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, *.adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, adobestats.io, REJECT"
+  - "DOMAIN-SUFFIX, photo-api.adobe.io, DIRECT"
+  - "DOMAIN-KEYWORD, adobe, DIRECT"
 
   # 业务规则
   - "RULE-SET, force-jp, 🇯🇵 日本落地"
-  - "DOMAIN-SUFFIX,gov,🇺🇸 美国落地"
-  - "DOMAIN-SUFFIX,mil,🇺🇸 美国落地"
+  - "DOMAIN-SUFFIX, gov, 🇺🇸 美国落地"
+  - "DOMAIN-SUFFIX, mil, 🇺🇸 美国落地"
   - "RULE-SET, spotify, 🎵 Spotify"
   - "RULE-SET, openai, ֎ OpenAI"
   - "RULE-SET, gemini, ⚎ Gemini"
-  - "DOMAIN,scholar.google.com,🎓 谷歌学术"
+  - "DOMAIN, scholar.google.com, 🎓 谷歌学术"
 
   # IPv6 流量
-  - IP-CIDR6,::/0,🌐 IPv6专用,no-resolve
+  - "IP-CIDR6, ::/0, 🌐 IPv6专用, no-resolve"
 
   # 兜底
   - "MATCH, 🔍 默认兜底"
