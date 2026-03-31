@@ -3,7 +3,14 @@ dns:
   enhanced-mode: redir-host
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - "+.*"
+    - "*.lan"
+    - "*.local"
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
+    - "stun.l.google.com"
+    - "lens.l.google.com"
+    - "localhost.ptlogin2.qq.com"
+
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
@@ -27,23 +34,19 @@ dns:
       - "https://doh.pub/dns-query"
 
 proxy-groups:
-  - name: ♻️ 自动选择
+  # === 核心链式代理 ===
+  - name: ✈️ 前置代理
     type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
     include-all: true
+    exclude-filter: "(?i)落地|自建|家宽|家庭"
 
-  - name: 📶 直接连接
-    type: select
-    proxies:
-      - DIRECT
-
-  - name: 🔰 节点选择
+  - name: 🏠 落地节点
     type: select
     include-all: true
-    interval: 3600
-    proxies:
-      - 📶 直接连接
+    filter: "(?i)落地|自建|家宽|家庭"
+    dialer-proxy: "✈️ 前置代理"
 
   - name: 🇭🇰 香港落地
     type: select
@@ -54,67 +57,58 @@ proxy-groups:
     type: select
     include-all: true
     filter: "(?i)🇯🇵|日本|JP|Tokyo"
+    # dialer-proxy: "✈️ 前置代理"   # 如果你日本节点也是自建或想走链路就加上
 
   - name: 🇺🇸 美国落地
     type: select
     include-all: true
     filter: "(?i)🇺🇸|美国|US|United States"
 
+  # 应用类策略组（推荐优先使用落地节点）
   - name: 🎵 Spotify
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
+      - 🏠 落地节点
       - 🇭🇰 香港落地
       - 🇯🇵 日本落地
       - 🇺🇸 美国落地
 
   - name: ֎ OpenAI
-    include-all: true
-    interval: 3600
     type: select
     proxies:
-      - ♻️ 自动选择
+      - 🏠 落地节点
       - 🇭🇰 香港落地
       - 🇯🇵 日本落地
       - 🇺🇸 美国落地
 
   - name: ⚎ Gemini
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
+      - 🏠 落地节点
       - 🇭🇰 香港落地
       - 🇯🇵 日本落地
       - 🇺🇸 美国落地
 
   - name: 🎓 谷歌学术
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
+      - 🏠 落地节点
 
-  - name: "🌐 IPv6专用"
+  # 兜底组
+  - name: 📶 直接连接
     type: select
-    include-all: true
+    proxies: [DIRECT]
+
+  - name: 🔍 默认兜底
+    type: select
     proxies:
-      - ♻️ 自动选择
-      - 🔰 节点选择
+      - 🏠 落地节点
       - 📶 直接连接
 
   - name: ⛔️ 禁止连接
     type: select
-    proxies:
-      - REJECT
-      - 📶 直接连接
+    proxies: [REJECT, 📶 直接连接]
 
-  - name: 🔍 默认兜底
-    type: select
-    include-all: true
-    proxies:
-      - ♻️ 自动选择
-      - 🔰 节点选择
-      - 📶 直接连接
 rule-providers:
   lan:
     url: https://cdn.jsdmirror.com/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list
@@ -211,9 +205,7 @@ rules:
   - "RULE-SET, openai, ֎ OpenAI"
   - "RULE-SET, gemini, ⚎ Gemini"
   - "DOMAIN, scholar.google.com, 🎓 谷歌学术"
-
-  # IPv6 流量
-  - "IP-CIDR6, ::/0, 🌐 IPv6专用, no-resolve"
+  - "RULE-SET, force-proxy, ✈️ 前置代理"
 
   # 兜底
   - "MATCH, 🔍 默认兜底"
