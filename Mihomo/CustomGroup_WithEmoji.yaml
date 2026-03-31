@@ -41,6 +41,8 @@ proxy-groups:
     interval: 300
     include-all: true
     exclude-filter: "(?i)落地|自建|家宽|家庭"
+    proxies:
+      - DIRECT
 
   - name: 🏠 落地节点
     type: select
