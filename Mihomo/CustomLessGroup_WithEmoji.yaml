@@ -54,8 +54,6 @@ proxy-groups:
       - DIRECT
   - name: 🔍 默认兜底
     type: select
-    use:
-      - all-proxies
     proxies:
       - 🔰 节点选择
       - DIRECT
