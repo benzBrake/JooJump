@@ -50,26 +50,31 @@ proxy-groups:
     type: select
     include-all: true
     filter: "(?i)🇭🇰|香港|HK|Hong Kong"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🇯🇵 日本节点
     type: select
     include-all: true
     filter: "(?i)🇯🇵|日本|JP|Tokyo"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🇺🇸 美国节点
     type: select
     include-all: true
     filter: "(?i)🇺🇸|美国|US|United States"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🇸🇬 狮城节点
     type: select
     include-all: true
     filter: "(?i)🇸🇬|新加坡|SG|Singapore"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🇦🇺 澳洲节点
     type: select
     include-all: true
     filter: "(?i)🇦🇺|澳大利亚|澳洲|AU|Australia"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🎵 Spotify
     type: select
