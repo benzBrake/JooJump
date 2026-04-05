@@ -45,3 +45,6 @@ DOMAIN,errlog.umeng.com
 DOMAIN,msg.umeng.com
 DOMAIN,msg.umengcloud.com
 DOMAIN,tracking.miui.com
+
+# Other
+DOMAIN-SUFFIX,linuxdo.org
