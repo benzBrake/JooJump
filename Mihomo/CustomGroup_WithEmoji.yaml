@@ -34,44 +34,110 @@ dns:
       - "https://doh.pub/dns-query"
 
 proxy-groups:
-  - name: 🚀 机场节点
+  - name: 🚀 机场自动
     type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
     include-all: true
     exclude-filter: "(?i)落地|自建"
 
-  - name: 🏠 自建节点
+  - name: 🚀 机场节点
     type: select
+    proxies:
+      - 🚀 机场自动
+    include-all: true
+    exclude-filter: "(?i)落地|自建"
+
+  - name: 🏠 自建自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)落地|自建"
 
-  - name: 🇭🇰 香港节点
+  - name: 🏠 自建节点
     type: select
+    proxies:
+      - 🏠 自建自动
+    include-all: true
+    filter: "(?i)落地|自建"
+
+  - name: 🇭🇰 香港自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇭🇰|香港|HK|Hong Kong"
     exclude-filter: "(?i).*落地.*|.*自建.*"
 
-  - name: 🇯🇵 日本节点
+  - name: 🇭🇰 香港节点
     type: select
+    proxies:
+      - 🇭🇰 香港自动
+    include-all: true
+    filter: "(?i)🇭🇰|香港|HK|Hong Kong"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇯🇵 日本自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇯🇵|日本|JP|Tokyo"
     exclude-filter: "(?i).*落地.*|.*自建.*"
 
-  - name: 🇺🇸 美国节点
+  - name: 🇯🇵 日本节点
     type: select
+    proxies:
+      - 🇯🇵 日本自动
+    include-all: true
+    filter: "(?i)🇯🇵|日本|JP|Tokyo"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇺🇸 美国自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇺🇸|美国|US|United States"
     exclude-filter: "(?i).*落地.*|.*自建.*"
 
-  - name: 🇸🇬 狮城节点
+  - name: 🇺🇸 美国节点
     type: select
+    proxies:
+      - 🇺🇸 美国自动
+    include-all: true
+    filter: "(?i)🇺🇸|美国|US|United States"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇸🇬 狮城自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇸🇬|新加坡|SG|Singapore"
     exclude-filter: "(?i).*落地.*|.*自建.*"
 
+  - name: 🇸🇬 狮城节点
+    type: select
+    proxies:
+      - 🇸🇬 狮城自动
+    include-all: true
+    filter: "(?i)🇸🇬|新加坡|SG|Singapore"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇦🇺 澳洲自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    include-all: true
+    filter: "(?i)🇦🇺|澳大利亚|澳洲|AU|Australia"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
   - name: 🇦🇺 澳洲节点
     type: select
+    proxies:
+      - 🇦🇺 澳洲自动
     include-all: true
     filter: "(?i)🇦🇺|澳大利亚|澳洲|AU|Australia"
     exclude-filter: "(?i).*落地.*|.*自建.*"
@@ -218,7 +284,7 @@ rules:
   - "RULE-SET, spotify, 🎵 Spotify"
   - "RULE-SET, openai, ֎ OpenAI"
   - "RULE-SET, gemini, ⚎ Gemini"
-  - "RULE-SET, force-proxy, 🏠 自建节点"
+  - "RULE-SET, force-proxy, 🔍 默认兜底"
 
   # 兜底
   - "MATCH, 🔍 默认兜底"
