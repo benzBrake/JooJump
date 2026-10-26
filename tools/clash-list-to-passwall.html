@@ -2,6 +2,8 @@
 <html>
 
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clash List to Passwall List Converter</title>
   <!-- Include Bootstrap CSS -->
   <link href="https://cdn.jsdmirror.com/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css"
@@ -71,12 +73,21 @@
     <div class="form-group">
       <label for="ruleInput">Enter the rule:</label>
       <textarea id="ruleInput" class="form-control" rows="4"></textarea>
+      <label for="inputBehavior" class="mt-2">输入规则类型</label>
+      <select id="inputBehavior" class="form-select">
+        <option value="classical">Classical（DOMAIN / DOMAIN-SUFFIX / IP-CIDR 等）</option>
+        <option value="domain">Domain（纯域名及 Clash 域名通配符）</option>
+        <option value="ipcidr">IPCIDR（纯 IP / CIDR）</option>
+      </select>
+      <p class="form-text">支持逐行文本及 payload: / rules: 下的 YAML 单行字符串列表（可带引号）。不支持完整配置、MRS、YAML 流式列表或多行标量。输出用于同一个 PassWall 分类，出口、顺序和附加条件需另行配置。</p>
     </div>
     <div class="d-flex justify-content-end gap-3">
       <button id="clearButton" class="btn btn-secondary mt-2">Clear</button>
       <button id="convertButton" class="btn btn-primary mt-2">Convert</button>
     </div>
     <p class="mt-3">Converted Rules:</p>
+    <p id="conversionSummary" role="status" aria-live="polite"></p>
+    <pre id="conversionIssues" class="text-wrap text-break" style="max-height: 20rem; overflow: auto;"></pre>
     <div class="d-flex gap-3">
       <div class="form-group flex-grow-1">
         <label for="domainOutput">Domain Rules:</label>
@@ -100,6 +111,122 @@
   </div>
 
   <script>
+    // Parse only the documented, line-oriented rule-list subset of YAML.
+    // Unsupported structures must produce a diagnostic rather than silently disappear.
+    function readRuleLine (raw) {
+      let line = raw.trim();
+      if (!line || line.startsWith("#") || /^(payload|rules):\s*(?:#.*)?$/.test(line) || /^(---|\.\.\.)$/.test(line)) return null;
+      line = line.replace(/^-\s+/, "");
+      if (line.startsWith("'") || line.startsWith('"')) {
+        const quote = line[0];
+        let end = 1;
+        for (; end < line.length; end++) {
+          if (quote === '"' && line[end] === "\\") { end++; continue; }
+          if (line[end] !== quote) continue;
+          if (quote === "'" && line[end + 1] === "'") { end++; continue; }
+          break;
+        }
+        if (end >= line.length || !/^\s*(?:#.*)?$/.test(line.slice(end + 1))) throw new Error("引号未闭合，或引号后存在非注释内容");
+        const scalar = line.slice(0, end + 1);
+        // Double-quoted values use the JSON-compatible YAML escape subset.
+        line = quote === "'" ? scalar.slice(1, -1).replace(/''/g, "'") : JSON.parse(scalar);
+      } else {
+        line = line.replace(/\s+#.*$/, "").trim();
+      }
+      if (!line) throw new Error("空规则");
+      return line;
+    }
+
+    function validIP (value) {
+      const parts = value.split("/");
+      if (parts.length > 2) return false;
+      const address = parts[0];
+      let bits;
+      if (address.includes(":")) {
+        if (!/^[0-9a-f:]+$/i.test(address) || /:{3}/.test(address)) return false;
+        const groups = address.split("::");
+        if (groups.length > 2) return false;
+        const validGroups = s => s === "" || s.split(":").every(g => /^[0-9a-f]{1,4}$/i.test(g));
+        if (!groups.every(validGroups)) return false;
+        const count = groups.reduce((sum, s) => sum + (s ? s.split(":").length : 0), 0);
+        if (groups.length === 1 ? count !== 8 : count >= 8) return false;
+        bits = 128;
+      } else {
+        if (!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(address) || address.split(".").some(n => Number(n) > 255 || (n.length > 1 && n[0] === "0"))) return false;
+        bits = 32;
+      }
+      return parts.length === 1 || (/^\d+$/.test(parts[1]) && Number(parts[1]) <= bits);
+    }
+
+    function validDomain (value) {
+      return value.length <= 253 && value.split(".").every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label));
+    }
+
+    function convertRules (input, behavior = "classical") {
+      const result = { domains: [], ips: [], issues: [], converted: 0, skipped: 0, duplicates: 0 };
+      const seenDomains = new Set();
+      const seenIPs = new Set();
+      const issue = (line, message, source) => result.issues.push({ line, message, source });
+      input.split(/\r?\n/).forEach((raw, index) => {
+        const lineNumber = index + 1;
+        try {
+          const line = readRuleLine(raw);
+          if (line === null) return;
+          let output;
+          let ip = false;
+          if (behavior === "domain") {
+            // Clash domain-provider wildcards differ from DOMAIN-WILDCARD.
+            if (line.startsWith("+.")) {
+              const domain = line.slice(2);
+              if (!validDomain(domain)) throw new Error("无效的域名后缀");
+              output = "domain:" + domain;
+            } else if (line.startsWith("*.")) {
+              const domain = line.slice(2);
+              if (!validDomain(domain)) throw new Error("仅支持纯域名、+.example.com 和 *.example.com；其他通配符请手动转换");
+              output = "regexp:^[^.]+\\." + domain.replace(/\./g, "\\.") + "$";
+            } else {
+              if (!validDomain(line)) throw new Error("无效域名或不支持的通配符；请检查输入规则类型");
+              output = "full:" + line;
+            }
+          } else if (behavior === "ipcidr") {
+            if (!validIP(line)) throw new Error("无效的 IP / CIDR；请检查输入规则类型");
+            output = line;
+            ip = true;
+          } else {
+            const parts = line.split(",").map(part => part.trim());
+            const [type, value] = parts;
+            if (!["DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD", "IP-CIDR", "IP-CIDR6"].includes(type)) {
+              throw new Error("不支持的规则类型或输入结构：" + type + "。ASN、Geo、正则、端口、逻辑规则及规则集等需手动处理");
+            }
+            if (!value) throw new Error("规则缺少匹配值");
+            ip = type === "IP-CIDR" || type === "IP-CIDR6";
+            if (ip) {
+              if (!validIP(value)) throw new Error("无效的 IP / CIDR");
+              // src changes destination matching to source matching; never emit it as a destination IP.
+              if (parts.slice(2).includes("src")) throw new Error("src 为源 IP 条件，不能转换成目标 IP；请在 PassWall 源地址中配置");
+              output = value;
+            } else if (type === "DOMAIN-KEYWORD") {
+              if (/[\s,:]/.test(value) || /^(#|full:|domain:|regexp:|geosite:)/.test(value)) throw new Error("关键词包含无法安全用于 PassWall 纯字符串的字符");
+              output = value;
+            } else {
+              if (!validDomain(value)) throw new Error("无效的域名");
+              output = (type === "DOMAIN" ? "full:" : "domain:") + value;
+            }
+            if (parts.length > 2) issue(lineNumber, "仅提取匹配值，未保留出口/附加参数：" + parts.slice(2).join(",") + "。请核对分类出口、优先级及 DNS 行为", raw);
+          }
+          const seen = ip ? seenIPs : seenDomains;
+          if (seen.has(output)) { result.duplicates++; return; }
+          seen.add(output);
+          (ip ? result.ips : result.domains).push(output);
+          result.converted++;
+        } catch (error) {
+          result.skipped++;
+          issue(lineNumber, "未转换：" + error.message, raw);
+        }
+      });
+      return result;
+    }
+
     function convertRule () {
       const inputRule = document.getElementById("ruleInput").value.trim();
       const domainOutput = document.getElementById("domainOutput");
@@ -110,43 +237,23 @@
         // Update the history list
         updateHistoryList(historyList, inputRule);
       } else {
-        ruleInput.classList.add("highlight-empty");
+        document.getElementById("ruleInput").classList.add("highlight-empty");
         setTimeout(() => {
-          ruleInput.classList.remove("highlight-empty");
+          document.getElementById("ruleInput").classList.remove("highlight-empty");
         }, 2000);
       }
 
-      // Split the input rule into lines
-      const ruleLines = inputRule.split("\n");
-      let domainRules = [];
-      let ipRules = [];
-
-      ruleLines.forEach((line) => {
-        line = line.trim();
-        if (line.startsWith("DOMAIN,") || line.startsWith("DOMAIN-SUFFIX")) {
-          const ruleParts = line.split(",");
-          const domain = ruleParts[1];
-          if (line.startsWith("DOMAIN-SUFFIX")) {
-            domainRules.push(`regexp:\\.${domain}$`);
-          } else {
-            domainRules.push(`full:${domain}`);
-          }
-        } else if (line.startsWith("IP-CIDR")) {
-          const ruleParts = line.split(",");
-          const ipRule = ruleParts[1];
-          ipRules.push(ipRule);
-        } else if (line.startsWith("DOMAIN-KEYWORD")) {
-          const ruleParts = line.split(",");
-          const keyword = ruleParts[1].replace(/-/g, ""); // Remove hyphens
-          domainRules.push(`${keyword}`);
-        }
-      });
+      const result = convertRules(inputRule, document.getElementById("inputBehavior").value);
+      const domainRules = result.domains;
+      const ipRules = result.ips;
+      document.getElementById("conversionSummary").textContent = `已转换 ${result.converted} 条（域名 ${domainRules.length} / IP ${ipRules.length}），重复 ${result.duplicates} 条，未转换 ${result.skipped} 条，提示 ${result.issues.length} 项。`;
+      document.getElementById("conversionIssues").textContent = result.issues.map(item => `第 ${item.line} 行：${item.message}\n  ${item.source}`).join("\n");
 
       // Set maximum height for output textareas to 15 rows
       const maxRows = 15;
       const lineHeight = 20; // Adjust this value for desired line height in pixels
-      const domainRows = Math.min(maxRows, domainRules.length);
-      const ipRows = Math.min(maxRows, ipRules.length);
+      const domainRows = Math.max(3, Math.min(maxRows, domainRules.length));
+      const ipRows = Math.max(3, Math.min(maxRows, ipRules.length));
 
       domainOutput.rows = domainRows;
       ipOutput.rows = ipRows;
@@ -155,13 +262,17 @@
       ipOutput.value = ipRules.join("\n");
 
       // Update the history list
-      updateHistoryList(historyList);
     }
 
     // Function to update the history list
     function updateHistoryList (historyList, currentInput) {
       const maxHistoryItems = 5;
-      var history = JSON.parse(localStorage.getItem("history")) || [];
+      let history;
+      try {
+        history = JSON.parse(localStorage.getItem("history")) || [];
+        if (!Array.isArray(history)) history = [];
+        history = history.filter(item => typeof item === "string");
+      } catch { history = []; }
 
       // If current input is not empty, add it to the history
       if (currentInput) {
@@ -177,7 +288,7 @@
       historyList.innerHTML = "";
 
       // Display history items in reverse order
-      history.reverse().forEach((input) => {
+      history.forEach((input) => {
         const listItem = document.createElement("li");
         listItem.textContent = input;
         listItem.classList.add("history-item");
@@ -191,7 +302,7 @@
       });
 
       // Save the updated history to localStorage
-      localStorage.setItem("history", JSON.stringify(history));
+      try { localStorage.setItem("history", JSON.stringify(history)); } catch { /* Storage may be disabled. Conversion still works. */ }
     }
 
     // Clear the input
@@ -201,6 +312,8 @@
         document.getElementById("ruleInput").value = "";
         document.getElementById("domainOutput").value = "";
         document.getElementById("ipOutput").value = "";
+        document.getElementById("conversionSummary").textContent = "";
+        document.getElementById("conversionIssues").textContent = "";
       });
 
     // Copy buttons click event for Domain Rules
