@@ -1,92 +1,224 @@
+dns:
+  enable: true
+  enhanced-mode: redir-host
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "+.stun.*.*"
+    - "+.stun.*.*.*"
+    - "stun.l.google.com"
+    - "lens.l.google.com"
+    - "localhost.ptlogin2.qq.com"
+
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback:
+    - "https://dns.cloudflare.com/dns-query"
+    - "https://dns.google/dns-query"
+  fallback-filter:
+    geoip: false
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "geosite:cn":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:china-max":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+
 proxy-groups:
-  - name: ♻️ 自动选择
+  - name: 🚀 机场自动
     type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
     include-all: true
+    exclude-filter: "(?i)落地|自建"
 
-  - name: 📶 直接连接
+  - name: 🚀 机场节点
     type: select
     proxies:
-      - DIRECT
-
-  - name: 🔰 节点选择
-    type: select
+      - 🚀 机场自动
     include-all: true
-    interval: 3600
-    proxies:
-      - 📶 直接连接
+    exclude-filter: "(?i)落地|自建"
 
-  - name: 🇭🇰 香港落地
+  - name: 🏠 自建自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    include-all: true
+    filter: "(?i)落地|自建"
+
+  - name: 🏠 自建节点
     type: select
+    proxies:
+      - 🏠 自建自动
+    include-all: true
+    filter: "(?i)落地|自建"
+
+  - name: 🇭🇰 香港自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇭🇰|香港|HK|Hong Kong"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
-  - name: 🇯🇵 日本落地
+  - name: 🇭🇰 香港节点
     type: select
+    proxies:
+      - 🇭🇰 香港自动
+    include-all: true
+    filter: "(?i)🇭🇰|香港|HK|Hong Kong"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇯🇵 日本自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇯🇵|日本|JP|Tokyo"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
-  - name: 🇺🇸 美国落地
+  - name: 🇯🇵 日本节点
     type: select
+    proxies:
+      - 🇯🇵 日本自动
+    include-all: true
+    filter: "(?i)🇯🇵|日本|JP|Tokyo"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇺🇸 美国自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
     include-all: true
     filter: "(?i)🇺🇸|美国|US|United States"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇺🇸 美国节点
+    type: select
+    proxies:
+      - 🇺🇸 美国自动
+    include-all: true
+    filter: "(?i)🇺🇸|美国|US|United States"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇸🇬 狮城自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    include-all: true
+    filter: "(?i)🇸🇬|新加坡|SG|Singapore"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇸🇬 狮城节点
+    type: select
+    proxies:
+      - 🇸🇬 狮城自动
+    include-all: true
+    filter: "(?i)🇸🇬|新加坡|SG|Singapore"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇦🇺 澳洲自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    include-all: true
+    filter: "(?i)🇦🇺|澳大利亚|澳洲|AU|Australia"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
+
+  - name: 🇦🇺 澳洲节点
+    type: select
+    proxies:
+      - 🇦🇺 澳洲自动
+    include-all: true
+    filter: "(?i)🇦🇺|澳大利亚|澳洲|AU|Australia"
+    exclude-filter: "(?i).*落地.*|.*自建.*"
 
   - name: 🎵 Spotify
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
-      - 🇭🇰 香港落地
-      - 🇯🇵 日本落地
-      - 🇺🇸 美国落地
+      - 🚀 机场自动
+      - 🚀 机场节点
+      - 🏠 自建自动
+      - 🏠 自建节点
+      - 🇭🇰 香港自动
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本自动
+      - 🇯🇵 日本节点
+      - 🇺🇸 美国自动
+      - 🇺🇸 美国节点
+      - 🇸🇬 狮城自动
+      - 🇸🇬 狮城节点
+      - 🇦🇺 澳洲自动
+      - 🇦🇺 澳洲节点
 
   - name: ֎ OpenAI
-    include-all: true
-    interval: 3600
     type: select
     proxies:
-      - ♻️ 自动选择
-      - 🇭🇰 香港落地
-      - 🇯🇵 日本落地
-      - 🇺🇸 美国落地
+      - 🚀 机场自动
+      - 🚀 机场节点
+      - 🏠 自建自动
+      - 🏠 自建节点
+      - 🇭🇰 香港自动
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本自动
+      - 🇯🇵 日本节点
+      - 🇺🇸 美国自动
+      - 🇺🇸 美国节点
+      - 🇸🇬 狮城自动
+      - 🇸🇬 狮城节点
+      - 🇦🇺 澳洲自动
+      - 🇦🇺 澳洲节点
 
   - name: ⚎ Gemini
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
-      - 🇭🇰 香港落地
-      - 🇯🇵 日本落地
-      - 🇺🇸 美国落地
-
-  - name: 🎓 谷歌学术
-    type: select
-    include-all: true
-    proxies:
-      - ♻️ 自动选择
-
-  - name: "🌐 IPv6专用"
-    type: select
-    include-all: true
-    proxies:
-      - ♻️ 自动选择
-      - 🔰 节点选择
-      - 📶 直接连接
-
-  - name: ⛔️ 禁止连接
-    type: select
-    proxies:
-      - REJECT
-      - 📶 直接连接
+      - 🚀 机场自动
+      - 🚀 机场节点
+      - 🏠 自建自动
+      - 🏠 自建节点
+      - 🇭🇰 香港自动
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本自动
+      - 🇯🇵 日本节点
+      - 🇺🇸 美国自动
+      - 🇺🇸 美国节点
+      - 🇸🇬 狮城自动
+      - 🇸🇬 狮城节点
+      - 🇦🇺 澳洲自动
+      - 🇦🇺 澳洲节点
 
   - name: 🔍 默认兜底
     type: select
-    include-all: true
     proxies:
-      - ♻️ 自动选择
-      - 🔰 节点选择
-      - 📶 直接连接
+      - 🚀 机场自动
+      - 🚀 机场节点
+      - 🏠 自建自动
+      - 🏠 自建节点
+      - 🇭🇰 香港自动
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本自动
+      - 🇯🇵 日本节点
+      - 🇺🇸 美国自动
+      - 🇺🇸 美国节点
+      - 🇸🇬 狮城自动
+      - 🇸🇬 狮城节点
+      - 🇦🇺 澳洲自动
+      - 🇦🇺 澳洲节点
+      - DIRECT
+
+  - name: ⛔️ 禁止连接
+    type: select
+    proxies: [REJECT, DIRECT]
+
 rule-providers:
   lan:
     url: https://cdn.jsdmirror.com/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list
@@ -101,6 +233,13 @@ rule-providers:
     format: yaml
     url: "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
     path: ./ruleset/ipcidr/cn.yaml
+    interval: 86400
+  china-max:
+    type: http
+    behavior: domain
+    format: yaml
+    url: "https://cdn.jsdmirror.com/gh/Accademia/Additional_Rule_For_Clash@master/ChinaMax/ChinaMax_Domain.yaml"
+    path: ./ruleset/china-max.yaml
     interval: 86400
   force-direct:
     url: "https://cdn.jsdmirror.com/gh/benzBrake/JooJump@master/Clash/ForceDirect.list"
@@ -154,30 +293,31 @@ rules:
 
   # 国内流量直连
   - "RULE-SET, lan, DIRECT"
-  - "RULE-SET,cn-cidr,DIRECT"
-  - "GEOSITE,CN,DIRECT"
-  - "GEOIP,CN,DIRECT"
+  - "RULE-SET, cn-cidr, DIRECT"
+  - "RULE-SET, china-max, DIRECT"
+  - "GEOSITE, CN, DIRECT"
+  - "GEOIP, CN, DIRECT"
 
   # 广告拦截
   - "RULE-SET, reject, ⛔️ 禁止连接"
 
-  - "DOMAIN-SUFFIX,adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,*.adobe.io,REJECT"
-  - "DOMAIN-SUFFIX,adobestats.io,REJECT"
-  - "DOMAIN-SUFFIX,photo-api.adobe.io,DIRECT"
-  - "DOMAIN-KEYWORD,adobe,DIRECT"
+  - "DOMAIN-SUFFIX, adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, *.adobe.io, REJECT"
+  - "DOMAIN-SUFFIX, adobestats.io, REJECT"
+  - "DOMAIN-SUFFIX, photo-api.adobe.io, DIRECT"
+  - "DOMAIN-KEYWORD, adobe, DIRECT"
+
+  # GITHUB 规则
+  - "AND,((DOMAIN-SUFFIX,github.com),(DST-PORT,22)),🏠 自建节点"
 
   # 业务规则
-  - "RULE-SET, force-jp, 🇯🇵 日本落地"
-  - "DOMAIN-SUFFIX,gov,🇺🇸 美国落地"
-  - "DOMAIN-SUFFIX,mil,🇺🇸 美国落地"
+  - "RULE-SET, force-jp, 🇯🇵 日本节点"
+  - "DOMAIN-SUFFIX, gov, 🇺🇸 美国节点"
+  - "DOMAIN-SUFFIX, mil, 🇺🇸 美国节点"
   - "RULE-SET, spotify, 🎵 Spotify"
   - "RULE-SET, openai, ֎ OpenAI"
   - "RULE-SET, gemini, ⚎ Gemini"
-  - "DOMAIN,scholar.google.com,🎓 谷歌学术"
-
-  # IPv6 流量
-  - IP-CIDR6,::/0,🌐 IPv6专用,no-resolve
+  - "RULE-SET, force-proxy, 🔍 默认兜底"
 
   # 兜底
   - "MATCH, 🔍 默认兜底"
